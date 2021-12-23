@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import LoginPass from '../components/auth/LoginPass';
 import LoginWithSMS from '../components/auth/LoginWithSMS';
+import SocialLogin from '../components/global/SocialLogin';
 import { RootStore } from '../utils/TypeScript';
 
 const Login = () => {
@@ -21,6 +22,7 @@ const Login = () => {
             <div className="auth_box">
                 <h3 className="text-uppercase text-center mb-4">Login</h3>
 
+                <SocialLogin />
                 {sms ? <LoginWithSMS /> : <LoginPass />}
                 <small className="row my-2 text-primary" style={{cursor: 'pointer'}}>
                     <Link to="/forgot_password" className="col-6">

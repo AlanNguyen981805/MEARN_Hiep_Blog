@@ -2,7 +2,7 @@ import { ALERT, IAlertType } from './../types/alertType';
 import { Dispatch } from "redux";
 import { postApi, getApi } from "../../utils/FetchData";
 import { IUserLogin, IUserRegister } from "../../utils/TypeScript";
-import { IAuthType } from "../types/authType";
+import { AUTH, IAuthType } from "../types/authType";
 import { validRegister } from '../../utils/Valid';
 
 export const login = (userLogin: IUserLogin) => async (dispatch: Dispatch<IAuthType | IAlertType >) => {
@@ -37,6 +37,30 @@ export const login = (userLogin: IUserLogin) => async (dispatch: Dispatch<IAuthT
         })
         console.log(error.response.data.msg);
         
+    }
+}
+
+export const loginGoogle = (id_token: string) =>async (dispatch: Dispatch<IAlertType | IAuthType>) => {
+    try {
+        dispatch({
+            type: ALERT,
+            payload: {loading: true}
+        })
+        const res = await postApi('google_login',{id_token})
+        dispatch({
+            type: AUTH,
+            payload: res.data
+        })
+        dispatch({
+            type: ALERT,
+            payload: {success: res.data.msg}
+        })
+        localStorage.setItem('logged', 'true')
+    } catch (error: any) {
+        dispatch({
+            type: ALERT,
+            payload: {errors: error.response.data.msg}
+        })
     }
 }
 
@@ -98,4 +122,5 @@ export const refesh_token = () => async (dispatch: Dispatch<IAuthType | IAlertTy
         } catch (error) {
 
         }
-    }
+}
+

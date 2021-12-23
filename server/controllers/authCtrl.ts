@@ -6,9 +6,11 @@ import bcrypt from "bcrypt"
 import sendEmail from '../config/sendMail';
 import { validateEmail, validatePhone } from '../middleware/valid';
 import { sendSms } from '../config/sendSMS';
-import { IDecodeToken, IUser } from '../config/interface';
+import { IDecodeToken, IGgPayload, IUser, IUserParams } from '../config/interface';
+import { OAuth2Client } from 'google-auth-library';
 
 const CLIENT_URL = `${process.env.BASE_URL}`
+const client = new OAuth2Client(`${process.env.MAIL_CLIENT_ID}`)
 
 const authCtrl = {
     register: async(req: Request, res: Response) => {
@@ -107,10 +109,43 @@ const authCtrl = {
             return res.status(500).json({msg: err.message})
         }
     },
+
     logout: async(req: Request, res: Response) => {
         try {
             res.clearCookie('refresh_token',{ path: 'api/refresh_token'})
             return res.json({msg: `Đã đăng xuất`})
+        } catch (err: any) {
+            console.log(err)
+            return res.status(500).json({msg: err.message})
+        }
+    },
+
+    googleLogin: async(req: Request, res: Response) => {
+        try {
+            const {id_token} = req.body
+            const ticket = await client.verifyIdToken({
+                idToken: id_token,
+                audience: process.env.MAIL_CLIENT_ID
+            })
+            const {email, email_verified, name,picture } = <IGgPayload>ticket.getPayload();
+            if(!email_verified) return res.status(500).json({msg: "Xac thuc google that bai"})
+            const password = email + 'your google secret password'
+            const passwordHash = await bcrypt.hash(password, 12)
+
+            const user = await Users.findOne({account: email})
+            if(user) {
+                loginUser(user, password, res)
+            } else {
+                const user = {
+                    name,
+                    account: email,
+                    password: passwordHash,
+                    avatar: picture,
+                    type: 'login'
+                }
+                registerUser(user, res)
+            }
+            
         } catch (err: any) {
             console.log(err)
             return res.status(500).json({msg: err.message})
@@ -135,7 +170,25 @@ const loginUser = (user: IUser, password: string, res: Response) => {
         access_token,
         user
     })
+}
 
+const registerUser = (user: IUserParams, res: Response) => {
+    const newUser = new Users(user)
+    newUser.save()
+
+    const access_token = generateAccessToken({id: newUser._id})
+    const refresh_token = generateRefeshToken({id: newUser._id})
+
+    res.cookie('refresh_token', refresh_token, {
+        httpOnly: true,
+        path: 'api/refresh_token',
+        maxAge: 30*24*60*60*1000 //30days
+    })
+
+    res.json({
+        access_token,
+        user: {...newUser._doc, password: ''}
+    })
 }
 
 export default authCtrl

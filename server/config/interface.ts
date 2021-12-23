@@ -8,6 +8,13 @@ import { Document } from "mongoose";
     type: string,
     _doc: object 
 }
+
+export interface IGgPayload {
+    email: string, 
+    email_verified: boolean, 
+    name: string,
+    picture: string
+}
 export interface INewUser{
     name: string,
     account: string,
@@ -19,4 +26,12 @@ export interface IDecodeToken{
     newUser?: INewUser,
     iat: number,
     exp: number
+}
+
+export interface IUserParams {
+    name: string,
+    account: string,
+    password: string,
+    avatar?: string,
+    type: string
 }
