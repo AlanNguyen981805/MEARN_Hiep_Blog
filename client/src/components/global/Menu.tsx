@@ -40,11 +40,11 @@ const Menu = () => {
           <li className="nav-item dropdown">
             <span className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               {auth.user.account}
-              <img  src={auth.user.avatar} className='avatar' />
+              <img src={auth.user.avatar} className='avatar' />
             </span>
 
             <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><Link className="dropdown-item" to="/profile">Profile</Link></li>
+              <li><Link className="dropdown-item" to={`/profile/${auth.user._id}`}>Profile</Link></li>
               <li><hr className="dropdown-divider" /></li>
               <li><Link className="dropdown-item" to="/" onClick={() => dispatch(logout())}>Logout</Link></li>
             </ul>

@@ -31,6 +31,9 @@ export interface IUser extends IUserLogin {
     updatedAt: string
     _id: string 
 }
+export interface IUserProfile extends IUserRegister {
+    avatar: string | File 
+}
 
 
 export interface IAlert {

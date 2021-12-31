@@ -8,6 +8,7 @@ import { validateEmail, validatePhone } from '../middleware/valid';
 import { sendSms } from '../config/sendSMS';
 import { IDecodeToken, IGgPayload, IUser, IUserParams } from '../config/interface';
 import { OAuth2Client } from 'google-auth-library';
+import fetch from "node-fetch"
 
 const CLIENT_URL = `${process.env.BASE_URL}`
 const client = new OAuth2Client(`${process.env.MAIL_CLIENT_ID}`)
@@ -79,9 +80,6 @@ const authCtrl = {
 
             // if login success
             loginUser(user, password, res)
-             console.log(req.body);
-             res.json({msg: 'Login success'})
-             
              
         } catch (err: any) {
             console.log(err)
@@ -151,10 +149,50 @@ const authCtrl = {
             return res.status(500).json({msg: err.message})
         }
     },
+
+    facebookLogin: async(req: Request, res: Response) => {
+        try {
+            const {accessToken, userID} = req.body
+            const URL = `https://graph.facebook.com/v3.0/${userID}/?fields=id,name,email,picture&access_token=${accessToken}            `
+            
+            const data = await fetch(URL)
+            .then((res: any) => res.json()
+            .then((res: any) => {
+                return res
+            }))
+            const {id, name, email, picture} = data;
+
+            const password = email + 'your facebook secrect password'
+            const passwordHash = await bcrypt.hash(password, 12)
+
+            const user = await Users.findOne({account: email})
+            if(user) {
+                loginUser(user, password, res)
+            } else {
+                const user = {
+                    name, 
+                    account: email, 
+                    password: passwordHash, 
+                    avatar: picture.data.url,
+                    type: 'login'
+                  }
+                  registerUser(user, res)
+            }
+            
+        } catch (err: any) {
+            console.log(err)
+            return res.status(500).json({msg: err.message})
+        }
+    },
 }
 
-const loginUser = (user: IUser, password: string, res: Response) => {
-    const isMatch = bcrypt.compare(password, user.password)
+const loginUser = async (user: IUser, password: string, res: Response) => {
+    console.log(">>>", password);
+    console.log(">>>", user);
+    
+    const isMatch = await bcrypt.compare(password, user.password)
+    console.log({isMatch});
+    
     if(!isMatch) return res.status(400).json({msg: "Mật khẩu không đúng"})
 
     const access_token = generateAccessToken({id: user._id})
@@ -167,8 +205,9 @@ const loginUser = (user: IUser, password: string, res: Response) => {
     })
 
     res.json({
+        msg: 'Login Success!',
         access_token,
-        user
+        user: { ...user._doc, password: '' }
     })
 }
 

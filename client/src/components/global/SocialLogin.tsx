@@ -1,7 +1,8 @@
 import React from 'react';
 import { GoogleLogin, GoogleLoginResponse } from 'react-google-login-lite';
+import { FacebookLogin, FacebookLoginAuthResponse } from 'react-facebook-login-lite';
 import { useDispatch } from 'react-redux';
-import { loginGoogle } from '../../redux/actions/authAction';
+import { loginFacebook, loginGoogle } from '../../redux/actions/authAction';
 
 const SocialLogin = () => {
     const dispatch = useDispatch();
@@ -10,6 +11,13 @@ const SocialLogin = () => {
         const idToken = googleUser.getAuthResponse().id_token
         dispatch(loginGoogle(idToken))   
     }
+    
+    const onFbSuccess = (response: FacebookLoginAuthResponse) => {
+        const { accessToken, userID } = response.authResponse;
+        console.log({ accessToken, userID } );
+        dispatch(loginFacebook(accessToken, userID))
+    }
+
     return (
         <div>
              <GoogleLogin 
@@ -18,6 +26,12 @@ const SocialLogin = () => {
                 onSuccess={onSuccess}
                 isSignedIn={false}
             />
+            <FacebookLogin 
+                appId="594614568307578"
+                onSuccess={onFbSuccess}
+                isSignedIn={true}
+            />
+            
         </div>
     );
 };

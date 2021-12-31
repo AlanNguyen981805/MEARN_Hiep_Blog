@@ -64,6 +64,31 @@ export const loginGoogle = (id_token: string) =>async (dispatch: Dispatch<IAlert
     }
 }
 
+export const loginFacebook = (accessToken: string, userID: string) => async (dispatch: Dispatch<IAuthType | IAlertType>) => {
+    try {
+        dispatch({
+            type: ALERT,
+            payload: {loading: true}
+        })
+        const res = await postApi('facebook_login', {accessToken, userID})
+        dispatch({
+            type: AUTH,
+            payload: res.data
+        })
+        dispatch({
+            type: ALERT,
+            payload: {success: res.data.msg}
+        })
+        localStorage.setItem('logged', 'true')
+        
+    } catch (error: any) {
+        dispatch({
+            type: ALERT,
+            payload: {errors: error.response.data.msg}
+        })
+    }
+}
+
 export const logout = () => async (dispatch: Dispatch<IAuthType | IAlertType>) => {
     localStorage.removeItem('logged')
     await getApi('logout')
@@ -118,9 +143,11 @@ export const refesh_token = () => async (dispatch: Dispatch<IAuthType | IAlertTy
 
             const res = await getApi('refresh_token')
             console.log(res);
-            dispatch({type: ALERT, payload: {}})
-        } catch (error) {
-
+            dispatch({type: ALERT, payload: {loading: false}})
+        } catch (error: any) {
+            dispatch({type: ALERT, payload: {loading: false}})
+            console.log(error.response);
+            
         }
 }
 
