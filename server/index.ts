@@ -20,6 +20,7 @@ import routes from "./routes"
 // Routes 
 app.use('/api', routes.authRouter)
 app.use('/api', routes.userRouter)
+app.use('/api', routes.categoryRouter)
 
 // Database
 import './config/database'
