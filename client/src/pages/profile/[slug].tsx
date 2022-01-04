@@ -10,7 +10,7 @@ const Profile = () => {
     const {slug}: IParams = useParams();
     const { auth } = useSelector((state: RootStore) => state)
 
-    console.log({UserID: slug});
+    console.log({auth});
     
     return (
         <div className='row my-3'>

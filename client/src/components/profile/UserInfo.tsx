@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUser } from '../../redux/actions/profileAction';
+import { resetPassword, updateUser } from '../../redux/actions/profileAction';
 import { FormSubmit, InputChange, IUserProfile, RootStore } from '../../utils/TypeScript';
 import NotFound from '../global/NotFound';
 
@@ -32,6 +32,10 @@ const UserInfo = () => {
         e.preventDefault()
         if(name || avatar) {
             dispatch(updateUser((avatar as File), name, auth))     
+        }
+
+        if(password && auth.access_token) {
+            dispatch(resetPassword(password, cf_password, auth.access_token))
         }
     }
         
@@ -83,9 +87,16 @@ const UserInfo = () => {
                     name="password" 
                     value={password}
                     onChange={handleChangeInput}
+                    disabled={auth.user.type !== 'register'}
                 />
                 <small onClick={() => setTypePass(!typePass)}>{typePass ? "Show" : "hidden"}</small>
             </div>
+            {
+                auth.user.type !== 'register' && 
+                <small className='text-danger'>
+                    * Quick login account with {auth.user.type} can't use this function
+                </small>
+            }
             <div className="form-group">
                 <label htmlFor="account">Confirm Password</label>
                 <input 
@@ -95,6 +106,7 @@ const UserInfo = () => {
                     name="cf_password" 
                     value={cf_password}
                     onChange={handleChangeInput}
+                    disabled={auth.user.type !== 'register'}
                 />
                 <small onClick={() => setTypePass(!typePass)}>{typePass ? "Show" : "hidden"}</small>
             </div>

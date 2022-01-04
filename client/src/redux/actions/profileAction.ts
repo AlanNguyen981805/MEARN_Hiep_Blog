@@ -2,6 +2,7 @@ import { Dispatch } from "redux";
 import { patchAPI } from "../../utils/FetchData";
 import { checkImg, imageUpload } from "../../utils/ImgUpload";
 import { IUserProfile } from "../../utils/TypeScript";
+import { checkPassword } from "../../utils/Valid";
 import { ALERT, IAlertType } from "../types/alertType";
 import { AUTH, IAuth, IAuthType } from "../types/authType";
 
@@ -54,6 +55,39 @@ async(dispatch: Dispatch<IAlertType | IAuthType>) => {
             type: ALERT,
             payload: {
                 loading: false
+            }
+        })
+    } catch (error: any) {
+        dispatch({
+            type: ALERT,
+            payload: {
+                errors: error.response.data.msg
+            }
+        })
+    }
+}
+
+export const resetPassword = (
+    password: string, cf_password: string, token: string
+) => async(dispatch: Dispatch<IAlertType | IAuthType>) => {
+    const msg = checkPassword(password, cf_password)
+    if(msg) return dispatch({type: ALERT, payload: {errors: msg}})
+    try {
+        dispatch({
+            type: ALERT,
+            payload: {
+                loading: true
+            }
+        })
+        const res = await patchAPI('reset_password', {password}, token)
+        console.log(res);
+        
+        
+        dispatch({
+            type: ALERT,
+            payload: {
+                loading: false,
+                success: 'succcc'
             }
         })
     } catch (error: any) {

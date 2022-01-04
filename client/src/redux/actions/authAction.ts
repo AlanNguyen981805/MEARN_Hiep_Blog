@@ -137,6 +137,8 @@ export const register = (userRegister: IUserRegister) => async (dispatch: Dispat
 
 export const refesh_token = () => async (dispatch: Dispatch<IAuthType | IAlertType>) => {
     const logged = localStorage.getItem('logged')
+    console.log(">>>>",logged );
+    
     if(logged !== 'true') return
         try {
             dispatch({type: ALERT, payload: {loading: true}})

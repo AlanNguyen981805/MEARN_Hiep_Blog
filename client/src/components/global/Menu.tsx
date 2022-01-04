@@ -19,6 +19,7 @@ const Menu = () => {
     { label: 'Home', path: '/'},
     { label: 'CreateBlog', path: 'create_blog '},
   ]
+console.log(auth.access_token);
 
   const navLinks = auth.access_token ? afLoginLinks : bfLoginLinks
 

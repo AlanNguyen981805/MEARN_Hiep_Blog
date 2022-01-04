@@ -51,8 +51,6 @@ const authCtrl = {
     activeAccount: async(req: Request, res: Response) => {
         try {
             const { active_token } = req.body;
-            console.log(active_token);
-            
             const decoded = <IDecodeToken>jwt.verify(active_token, `${process.env.ACTIVE_TOKEN_SECRET}`)
             const {newUser} = decoded
             if(!newUser) return res.status(400).json({ msg: "Invalid authentication" })
@@ -139,7 +137,7 @@ const authCtrl = {
                     account: email,
                     password: passwordHash,
                     avatar: picture,
-                    type: 'login'
+                    type: 'google'
                 }
                 registerUser(user, res)
             }
@@ -174,7 +172,7 @@ const authCtrl = {
                     account: email, 
                     password: passwordHash, 
                     avatar: picture.data.url,
-                    type: 'login'
+                    type: 'facebook'
                   }
                   registerUser(user, res)
             }
@@ -187,8 +185,6 @@ const authCtrl = {
 }
 
 const loginUser = async (user: IUser, password: string, res: Response) => {
-    console.log(">>>", password);
-    console.log(">>>", user);
     
     const isMatch = await bcrypt.compare(password, user.password)
     console.log({isMatch});
