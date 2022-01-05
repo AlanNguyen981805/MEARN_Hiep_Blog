@@ -34,10 +34,15 @@ export interface IUser extends IUserLogin {
 export interface IUserProfile extends IUserRegister {
     avatar: string | File 
 }
-
-
 export interface IAlert {
     loading?: boolean,
     success?: string | string[],
     errors?: string | string[]
+}
+
+export interface ICategory {
+    createdAt: string
+    updatedAt: string
+    _id: string 
+    name: string
 }

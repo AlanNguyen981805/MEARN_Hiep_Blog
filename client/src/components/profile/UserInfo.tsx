@@ -34,8 +34,8 @@ const UserInfo = () => {
             dispatch(updateUser((avatar as File), name, auth))     
         }
 
-        if(password && auth.access_token) {
-            dispatch(resetPassword(password, cf_password, auth.access_token))
+        if(password && auth.accessToken) {
+            dispatch(resetPassword(password, cf_password, auth.accessToken))
         }
     }
         

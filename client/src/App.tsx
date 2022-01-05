@@ -6,12 +6,14 @@ import Footer from './components/global/Footer';
 import Header from './components/global/Header';
 import PageRender from './PageRender';
 import { refesh_token } from './redux/actions/authAction';
+import { getCategory } from './redux/actions/categoryAction';
 
 function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(refesh_token())
+    dispatch(getCategory())
   }, [dispatch])
 
   return (

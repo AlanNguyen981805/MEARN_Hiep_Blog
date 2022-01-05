@@ -14,8 +14,8 @@ const Login = () => {
     console.log(auth);
     useEffect(() => {
         
-        if(auth.access_token) navigate('/')
-    }, [auth.access_token])
+        if(auth.accessToken) navigate('/')
+    }, [auth.accessToken])
 
     return (
         <div className="auth_page">

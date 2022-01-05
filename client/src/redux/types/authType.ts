@@ -3,7 +3,7 @@ export const AUTH = 'AUTH'
 
 export interface IAuth {
     msg?: string,
-    access_token?: string,
+    accessToken?: string,
     user?: IUser
 }
 

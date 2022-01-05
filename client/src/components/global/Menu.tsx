@@ -19,9 +19,8 @@ const Menu = () => {
     { label: 'Home', path: '/'},
     { label: 'CreateBlog', path: 'create_blog '},
   ]
-console.log(auth.access_token);
 
-  const navLinks = auth.access_token ? afLoginLinks : bfLoginLinks
+  const navLinks = auth.accessToken ? afLoginLinks : bfLoginLinks
 
   const isActive = (pn: string) => {
     if(pn === pathname) return 'active'
@@ -35,6 +34,13 @@ console.log(auth.access_token);
             <Link className="nav-link" to={link.path}>{link.label}</Link>
           </li>
         ))
+      }
+      {
+        auth.user?.role === 'admin' && (
+          <li className={`nav-item ${isActive('/category')}`}>
+            <Link to={'/category'} className='nav-link'>Category</Link>
+          </li>
+        )
       }
       {
         auth.user && (

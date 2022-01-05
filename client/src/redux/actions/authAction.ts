@@ -144,8 +144,9 @@ export const refesh_token = () => async (dispatch: Dispatch<IAuthType | IAlertTy
             dispatch({type: ALERT, payload: {loading: true}})
 
             const res = await getApi('refresh_token')
-            console.log(res);
-            dispatch({type: ALERT, payload: {loading: false}})
+            dispatch({ type: AUTH,payload: res.data })
+
+            dispatch({ type: ALERT, payload: { } })
         } catch (error: any) {
             dispatch({type: ALERT, payload: {loading: false}})
             console.log(error.response);
