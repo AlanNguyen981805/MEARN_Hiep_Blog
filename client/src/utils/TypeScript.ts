@@ -6,7 +6,7 @@ export interface IParams {
     slug: string  | undefined
 }
 
-export type InputChange = ChangeEvent<HTMLInputElement>
+export type InputChange = ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
 
 export type FormSubmit = FormEvent<HTMLFormElement>
 
@@ -45,4 +45,15 @@ export interface ICategory {
     updatedAt: string
     _id: string 
     name: string
+}
+
+export interface IBlog {
+    _id?: string,
+    user: string | IUser,
+    title: string,
+    content: string,
+    description: string,
+    thumbnail: string | File,
+    category: string,
+    createdAt: string
 }
