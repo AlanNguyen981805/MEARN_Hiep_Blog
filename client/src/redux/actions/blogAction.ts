@@ -42,10 +42,11 @@ export const getHomeBlogs = () =>async (dispatch: Dispatch<IAlertType | IGetHome
     }   
 }
 
-export const getBlogsByCategoryId = (id: string) =>async (dispatch: Dispatch<IAlertType | IGetBlogsCategoryType>) => {
+export const getBlogsByCategoryId = (id: string, param: any) =>async (dispatch: Dispatch<IAlertType | IGetBlogsCategoryType>) => {
     try {
+        let limit = 4
         dispatch({ type: ALERT, payload: {loading: true}})
-        const res = await getApi(`blogs/${id}`)
+        const res = await getApi(`blogs/${id}?page=${param}&limit=${limit}`)
         dispatch({
             type: GET_BLOGS_CATEGORY_ID,
             payload: {

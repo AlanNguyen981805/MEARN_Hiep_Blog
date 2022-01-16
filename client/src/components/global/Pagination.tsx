@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 interface Iprops {
-    total: number
+    total: number,
+    callback: (num: number) =>  void
 }
 
-const Pagination: React.FC<Iprops> = ({ total }) => {
+const Pagination: React.FC<Iprops> = ({ total, callback }) => {
     const [page, setPage] = useState(1)
     const newArr = [...Array(total)].map((_, i) => i + 1)
     const navigate = useNavigate()
+    
+  const [searchParams] = useSearchParams();
     
     const isActive = (index: number) => {
         if(index === page) return "active"
@@ -17,7 +20,13 @@ const Pagination: React.FC<Iprops> = ({ total }) => {
 
     const handlePagination = (num: number) => {
         navigate(`?page=${num}`)
+        setPage(num)
+        callback(num)
     }
+
+    useEffect(() => {
+        const num = searchParams.get('page')
+    },[])
 
     return (
         <div>

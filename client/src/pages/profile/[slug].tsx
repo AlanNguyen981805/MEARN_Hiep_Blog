@@ -10,13 +10,13 @@ const Profile = () => {
     const {slug}: IParams = useParams();
     const { auth } = useSelector((state: RootStore) => state)
 
-    console.log({auth});
-    
+        console.log({auth});
+        
     return (
         <div className='row my-3'>
             <div className='col-md-5 mb-3'>
                 {
-                    auth.user?._id === slug ? <UserInfo /> : <OtherInfo />
+                    auth.user?._id === slug ? <UserInfo /> : <OtherInfo id={slug} />
                 }
             </div>
             <div className="col-md-7">
