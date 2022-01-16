@@ -97,7 +97,7 @@ const authCtrl = {
             if(!user) return res.status(400).json({msg: 'Tai khoan khong ton tai'})
             const accessToken = generateAccessToken({id: user._id  }) 
 
-            res.json({accessToken, user})
+            res.json({access_token: accessToken, user})
 
             
         } catch (err: any) {

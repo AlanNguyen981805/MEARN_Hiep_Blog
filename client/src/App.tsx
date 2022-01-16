@@ -6,6 +6,7 @@ import Footer from './components/global/Footer';
 import Header from './components/global/Header';
 import PageRender from './PageRender';
 import { refesh_token } from './redux/actions/authAction';
+import { getHomeBlogs } from './redux/actions/blogAction';
 import { getCategory } from './redux/actions/categoryAction';
 
 function App() {
@@ -14,8 +15,13 @@ function App() {
   useEffect(() => {
     dispatch(refesh_token())
     dispatch(getCategory())
-  }, [dispatch])
+    dispatch(getHomeBlogs())
 
+  }, [dispatch])
+    
+  function die(){
+    document.write('end')
+  } 
   return (
     <div className="container">
       <Router>

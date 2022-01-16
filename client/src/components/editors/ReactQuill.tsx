@@ -15,7 +15,7 @@ const Quill: React.FC<IProps> = ({setBody}) => {
     const quillRef = useRef<ReactQuill>(null)
 
     const handleChange = (e: any) => {
-        console.log(e);
+        setBody(e)
     }
 
     const handleChangeImage = useCallback(() => {

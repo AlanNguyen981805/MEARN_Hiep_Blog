@@ -2,9 +2,13 @@ import { combineReducers } from "redux";
 import auth from './authReducer'
 import alert from './alertReducer'
 import categories from './categoryReducer'
+import homeBlogs from './homeBLogsReducer'
+import blogsCategory from './blogsCategoryReducer'
 
 export default combineReducers({
     auth,
     alert,
-    categories
+    categories,
+    homeBlogs,
+    blogsCategory
 })

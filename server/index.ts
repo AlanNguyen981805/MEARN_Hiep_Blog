@@ -21,6 +21,7 @@ import routes from "./routes"
 app.use('/api', routes.authRouter)
 app.use('/api', routes.userRouter)
 app.use('/api', routes.categoryRouter)
+app.use('/api', routes.blogRouter)
 
 // Database
 import './config/database'

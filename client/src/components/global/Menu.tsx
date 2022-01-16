@@ -20,8 +20,7 @@ const Menu = () => {
     { label: 'CreateBlog', path: 'create_blog '},
   ]
 
-  const navLinks = auth.accessToken ? afLoginLinks : bfLoginLinks
-
+  const navLinks = auth.access_token ? afLoginLinks : bfLoginLinks
   const isActive = (pn: string) => {
     if(pn === pathname) return 'active'
   }

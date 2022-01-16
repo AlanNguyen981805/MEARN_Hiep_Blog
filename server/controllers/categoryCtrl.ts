@@ -7,7 +7,7 @@ const categoryCtrl = {
         if(!req.user) return res.status(400).json({msg: 'Authentication invalid'})
         
         if(req.user.role !== 'admin') return res.status(400).json({msg: "Khong co quyen tao"})
-
+    
         try {
             const name = req.body.name.toLowerCase()
             const category = await Categories.findOne({name})
@@ -36,7 +36,9 @@ const categoryCtrl = {
     getCategories:async (req:IReqAuth, res: Response) => {
         try {
             const categories = await Categories.find().sort("-createAt")
-            res.json({categories})
+            res.json({
+                categories
+            })
         } catch (error) {
             return res.status(500).json({msg: error})
         }
@@ -47,7 +49,7 @@ const categoryCtrl = {
         if(req.user.role !== 'admin') return res.status(400).json({msg: "Khong co quyen tao"})
         try {
             const category = await Categories.findOneAndUpdate({_id: req.params.id}, {
-                name: req.body.name
+                name: (req.body.name).toLowerCase()
             })
             res.json({msg: 'Update success'})
         } catch (error) {

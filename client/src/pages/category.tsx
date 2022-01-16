@@ -13,23 +13,21 @@ const Category = () => {
 
   const handleSubmit = (e: FormSubmit) => {
       e.preventDefault()
-    if(!auth.accessToken || !name) return
+    if(!auth.access_token || !name) return
     if(edit) {
         if(edit.name === name) return
         const data = {...edit, name}
-        dispatch(updateCategory(data, auth.accessToken))
+        dispatch(updateCategory(data, auth.access_token))
     } else {
-        dispatch(createCategory(name, auth.accessToken))
+        dispatch(createCategory(name, auth.access_token))
         setName('')
         setEdit(null)
     }
   }
   
   const handleDelete = (id: string) => {
-      if(!auth.accessToken) return
-      console.log({id});
-      
-      dispatch(deleteCategory(id, auth.accessToken))
+      if(!auth.access_token) return
+      dispatch(deleteCategory(id, auth.access_token))
   }
 
   useEffect(() => {

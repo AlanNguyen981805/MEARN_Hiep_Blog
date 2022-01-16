@@ -8,7 +8,7 @@ import { AUTH, IAuth, IAuthType } from "../types/authType";
 
 export const updateUser = (avatar: File, name: string, auth: IAuth) => 
 async(dispatch: Dispatch<IAlertType | IAuthType>) => {
-    if(!auth.accessToken || !auth.user) return;
+    if(!auth.access_token || !auth.user) return;
     let url = ''
     try {
         dispatch({
@@ -32,7 +32,7 @@ async(dispatch: Dispatch<IAlertType | IAuthType>) => {
             dispatch({
                 type: AUTH,
                 payload: {
-                    access_token: auth.accessToken,
+                    access_token: auth.access_token,
                     user: {
                         ...auth.user,
                         avatar: url ? url : auth.user.avatar,
@@ -45,7 +45,7 @@ async(dispatch: Dispatch<IAlertType | IAuthType>) => {
             const res = await patchAPI('user', {
                 avatar: url ? url : auth.user.avatar,
                 name: name ? name: auth.user.name
-            }, auth.accessToken)
+            }, auth.access_token)
             
             dispatch({
                 type: ALERT,
