@@ -1,4 +1,4 @@
-import { GET_BLOGS_CATEGORY_ID } from './../types/blogType';
+import { GET_BLOGS_CATEGORY_ID, GET_BLOGS_USER_ID, IGetBlogsUserType } from './../types/blogType';
 import { IAlertType, ALERT} from './../types/alertType';
 import { Dispatch } from "react";
 import { IBlog } from "../../utils/TypeScript";
@@ -46,9 +46,30 @@ export const getBlogsByCategoryId = (id: string, param: any) =>async (dispatch: 
     try {
         let limit = 4
         dispatch({ type: ALERT, payload: {loading: true}})
-        const res = await getApi(`blogs/${id}?page=${param}&limit=${limit}`)
+        const res = await getApi(`blogs/category/${id}?page=${param}&limit=${limit}`)
         dispatch({
             type: GET_BLOGS_CATEGORY_ID,
+            payload: {
+                ...res.data,
+                id
+            }
+        })
+       
+        dispatch({ type: ALERT, payload: {loading: false}})
+    } catch (error: any) {
+        dispatch({type: ALERT, payload: {errors: error.response.data.msg, loading: false}})
+    }   
+}
+
+export const getBlogsByUserId = (id: string, search: string) =>async (dispatch: Dispatch<IAlertType | IGetBlogsUserType>) => {
+    try {
+        let limit = 3
+        let value = search ? search : `?page=${1}`; 
+        dispatch({ type: ALERT, payload: {loading: true}})
+        const res = await getApi(`blogs/user/${id}${value}&limit=${limit}`)
+        
+        dispatch({
+            type: GET_BLOGS_USER_ID,
             payload: {
                 ...res.data,
                 id

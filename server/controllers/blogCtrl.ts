@@ -155,6 +155,81 @@ const blogCtrl = {
             return res.status(500).json({msg: error.message})
         }
     },
+    getBlogsByUser: async(req: IReqAuth, res: Response) => {
+        console.log(req.params.id);
+        
+        const { limit, page, skip } = Pagination(req)
+
+        try {
+            const Data = await Blogs.aggregate([
+                {
+                    $facet: {
+                        totalData: [
+                            { $match: 
+                                { user : new mongoose.Types.ObjectId(req.params.id) } 
+                            },
+                            {
+                                $lookup: {
+                                    from: "users",
+                                    let: { user_id: "$user" },
+                                    pipeline: [
+                                        {$match: { $expr: { $eq: ["$_id", "$$user_id"] } } },
+                                        {$project: {password: 0}}
+                                    ],
+                                    as: "user"
+                                }
+                            },
+                            {$unwind: "$user"},
+                            {
+                                $sort: {createAt: -1}
+                            },
+                            { $skip: skip },
+                            { $limit: limit }
+                        ],
+                        totalCount: [
+                            { 
+                                $match: {
+                                    user: new mongoose.Types.ObjectId(req.params.id)
+                                }
+                            },
+                            {$count: 'count'}
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        count: { $arrayElemAt: ["$totalCount.count", 0] },
+                        totalData: 1
+                    }
+                }
+            ])
+            const blogs = Data[0].totalData
+            const count = Data[0].count
+
+            // Panigation
+            let total = 0;
+            if(count % limit === 0) {
+                total = count / limit
+            } else {
+                total = Math.floor(count / limit) + 1
+            }
+            return res.json({blogs, total})
+            
+        } catch (error: any) {
+            return res.status(500).json({msg: error.message})
+        }
+    },
+    getBlog: async(req: IReqAuth, res: Response) => {
+        try {
+            const blog = await Blogs.findOne({_id: req.params.id}).populate("user", "-password")
+            if(!blog) return res.status(400).json({msg: "Blog is not exist"})
+
+            return res.json(blog)
+        } catch (error: any) {
+            res.status(500).json({msg: error.message})
+        }
+    }
 }
 
 export default blogCtrl;
