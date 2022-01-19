@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LoginPass from '../components/auth/LoginPass';
 import LoginWithSMS from '../components/auth/LoginWithSMS';
 import SocialLogin from '../components/global/SocialLogin';
@@ -10,11 +10,14 @@ const Login = () => {
     const [sms, setSms] = useState(false)
     const navigate = useNavigate()
     const { auth } = useSelector((state: RootStore) => state)
+    const location = useLocation()
 
     console.log(auth);
     useEffect(() => {
-        
-        if(auth.access_token) navigate('/')
+        if(auth.access_token) {
+            let url = location.search.replace('?', '/')
+            navigate(url)
+        }
     }, [auth.access_token])
 
     return (
