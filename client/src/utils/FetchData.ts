@@ -1,8 +1,6 @@
 import axios from "axios"
 
 export const postApi = async (url: string, post: object, token?: any) => {
-    console.log(url);
-    
     const res = await axios.post(`/api/${url}`, post, {
         headers: { Authorization: token }
     })

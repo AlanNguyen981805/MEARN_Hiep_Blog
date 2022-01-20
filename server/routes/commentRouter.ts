@@ -4,5 +4,6 @@ import auth from '../middleware/auth';
 const router = express.Router()
 
 router.post('/comment', auth, commentCtrl.createComment)
+router.get('/comments/blog/:id', commentCtrl.getComment)
 
 export default router
