@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IComment } from '../../utils/TypeScript';
 import AvatarComment from './AvatarComment';
 import AvatarReply from './AvatarReply';
@@ -10,7 +10,11 @@ interface IPorps {
 
 const Comments: React.FC<IPorps> = ({comment}) => {
     const [showReply, setShowReply] = useState<IComment[]>([])
-
+    const [next, setNext] = useState(2)
+    useEffect(() => {
+        if(!comment.replyCM) return;
+        setShowReply(comment.replyCM)
+      },[comment.replyCM])
     return (
         <div className="my-3 d-flex" style={{
             opacity: comment._id ? 1 : 0.5,
@@ -22,7 +26,7 @@ const Comments: React.FC<IPorps> = ({comment}) => {
                 showReply={showReply}
                 setShowReply={setShowReply}
             >
-                {showReply.map((comment, index) => (
+                {showReply.slice(0, next).map((comment, index) => (
                     <div key={index} className='my-3 d-flex' style={{
                         opacity: comment._id ? 1 : 0.5,
                         pointerEvents: comment._id ? 'initial' : 'none'
@@ -43,6 +47,21 @@ const Comments: React.FC<IPorps> = ({comment}) => {
                         />
                     </div>
                 ))}
+
+                <div style={{ cursor: 'pointer' }}>
+                    {
+                        showReply.length - next > 0
+                            ? <small style={{ color: 'crimson' }}
+                                onClick={() => setNext(next + 5)}>
+                                See more comments...
+                            </small>
+                            : showReply.length > 2 &&
+                            <small style={{ color: 'teal' }}
+                                onClick={() => setNext(2)}>
+                                Hide comments...
+                            </small>
+                    }
+                </div>
             </CommentsList>
         </div>
     );

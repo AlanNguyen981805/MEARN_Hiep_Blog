@@ -42,18 +42,56 @@ const commentCtrl = {
                         totalData: [
                         {
                             $match: {
-                                blog_id: new mongoose.Types.ObjectId(req.params.id)
+                                blog_id: new mongoose.Types.ObjectId(req.params.id),
+                                comment_root: { $exists: false },
+                                reply_user: { $exists: false }
                             },
                         },{
                             $lookup: {
                                 from: "users",
-                                localField: "user",
-                                foreignField: "_id",
+                                let: { user_id: "$user" },
+                                pipeline: [
+                                    { $match: { $expr: { $eq: ["$_id", "$$user_id"] } } },
+                                    { $project: { name: 1, avatar: 1 } }
+                                ],
                                 as: "user"
                             }
                         }, {
                             $unwind: "$user"
                         }, {
+                            $lookup: {
+                              "from": "comments",
+                              "let": { cm_id: "$replyCM" },
+                              "pipeline": [
+                                { $match: { $expr: { $in: ["$_id", "$$cm_id"] } } },
+                                {
+                                  $lookup: {
+                                    from: "users",
+                                    let: { user_id: "$user" },
+                                    pipeline: [
+                                        { $match: { $expr: { $eq: ["$_id", "$$user_id"] } } },
+                                        { $project: { name: 1, avatar: 1 } }
+                                    ],
+                                    as: "user"
+                                  }
+                                },
+                                { $unwind: "$user" },
+                                {
+                                  $lookup: {
+                                    from: "users",
+                                    let: { user_id: "$reply_user" },
+                                    pipeline: [
+                                        { $match: { $expr: { $eq: ["$_id", "$$user_id"] } } },
+                                        { $project: { name: 1, avatar: 1 } }
+                                    ],
+                                    as: "reply_user"
+                                  }
+                                },
+                                { $unwind: "$reply_user" }
+                              ],
+                              "as": "replyCM"
+                            }
+                          }, {
                             $sort: { createAt: -1 }
                         }, {
                             $skip: skip,
@@ -62,7 +100,9 @@ const commentCtrl = {
                         }],
                         totalCount: [
                             { $match: {
-                                blog_id: new mongoose.Types.ObjectId(req.params.id)
+                                blog_id: new mongoose.Types.ObjectId(req.params.id),
+                                comment_root: { $exists: false },
+                                reply_user: { $exists: false }
                             }},
                             { $count: 'count' }
                         ]
@@ -90,7 +130,37 @@ const commentCtrl = {
         } catch (error: any) {
             return res.status(500).json({ msg: error.message })
         }
-    }
+    },
+    replyComment: async (req: IReqAuth, res: Response) => {
+        if(!req.user) return res.status(400).json({msg: "Invalid Authentication"})
+        try {
+            const {
+                content,
+                blog_id,
+                blog_user_id,
+                comment_root,
+                reply_user
+            } = req.body
+            console.log(req.body)
+            const newComment = new Comments({
+                user: req.user._id, 
+                content,
+                blog_id,
+                blog_user_id,
+                comment_root,
+                reply_user: reply_user._id
+            })
+
+            await Comments.findOneAndUpdate({_id: comment_root}, {
+                $push: { replyCM: newComment._id }
+            })
+            await newComment.save()
+
+            return res.json(newComment)
+        } catch (error: any) {
+            return res.status(500).json({ msg: error.message })
+        }
+    },
 }
 
 export default commentCtrl
