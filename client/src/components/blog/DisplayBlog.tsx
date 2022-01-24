@@ -54,7 +54,7 @@ const DisplayBlog: React.FC<IProps> = ({blog}) => {
     if(!blog._id) return
     
     const num = location.search.slice(6) || 1
-    fetchComments(blog._id, num)
+    fetchComments(blog._id, num )
   }, [blog._id])
 
   return (

@@ -8,6 +8,8 @@ import PageRender from './PageRender';
 import { refesh_token } from './redux/actions/authAction';
 import { getHomeBlogs } from './redux/actions/blogAction';
 import { getCategory } from './redux/actions/categoryAction';
+import io from "socket.io-client"
+import { SOCKET } from './redux/types/socketType';
 
 function App() {
   const dispatch = useDispatch()
@@ -18,6 +20,15 @@ function App() {
     dispatch(getHomeBlogs())
 
   }, [dispatch])
+
+  useEffect(() => {
+    const socket = io()
+    dispatch({
+      type: SOCKET,
+      payload: socket
+    })
+    return () => { socket.close() }
+  }, [])
     
   function die(){
     document.write('end')
