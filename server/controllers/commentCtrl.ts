@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import { IReqAuth } from "../config/interface";
 import Comments from "../models/commentModel";
 import mongoose from "mongoose"
+import { io } from "../index"
 
 const Pagination = (req: IReqAuth) => {
     let page = Number(req.query.page) * 1 || 1;
@@ -26,6 +27,12 @@ const commentCtrl = {
                 blog_id,
                 blog_user_id
             })
+            const data = {
+                ...newComment._doc,
+                user: req.user,
+                createAt: new Date().toISOString()
+            }
+            io.to(`${blog_id}`).emit('createComment', data)
             await newComment.save()
 
             return res.json(newComment)
@@ -154,7 +161,16 @@ const commentCtrl = {
             await Comments.findOneAndUpdate({_id: comment_root}, {
                 $push: { replyCM: newComment._id }
             })
-            await newComment.save()
+
+            const data = {
+                ...newComment._doc,
+                user: req.user,
+                reply_user: reply_user,
+                createAt: new Date().toISOString()
+
+            }
+            io.to(`${blog_id}`).emit('replyComment', data)
+            await newComment.save() 
 
             return res.json(newComment)
         } catch (error: any) {

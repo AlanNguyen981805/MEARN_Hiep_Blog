@@ -16,7 +16,8 @@ const Login = () => {
     useEffect(() => {
         if(auth.access_token) {
             let url = location.search.replace('?', '/')
-            navigate(url)
+            if(url) return navigate(url)
+            navigate('/')
         }
     }, [auth.access_token])
 
